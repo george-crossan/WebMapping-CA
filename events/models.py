@@ -3,7 +3,6 @@ from django.contrib.gis.geos import Point
 
 
 class Event(models.Model):
-    """A simple spatial model for testing our setup"""
     name = models.CharField(max_length=200)
     venue = models.CharField(max_length=255)
     city = models.CharField(max_length=100)

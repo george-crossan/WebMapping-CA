@@ -89,9 +89,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'WhatsOnIreland.wsgi.application'
 
 
-WSGI_APPLICATION = 'WhatsOnIreland.wsgi.application'
-
-
 # Database configuration for PostGIS
 DATABASES = {
     'default': {
