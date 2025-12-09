@@ -1,5 +1,5 @@
 
-# Advanced Web Mapping CA1
+# Advanced Web Mapping CA
 
 This repository contains a web mapping application for my Advanced Web Mapping module at TU Dublin
 
@@ -104,16 +104,3 @@ URL = [http://127.0.0.1:8000/search/map](http://127.0.0.1:8000/search/map)
 
     GET /api/events/ - List all events
     GET /api/geojson/ - Events GeoJson
-
-
-# Possible extensions
-
-### Some extensions I will make to this app in the future:
-- Fully Dockerize all aspects of the project (Django, Postgis, Nginx, Pgadmin)
-- Update/modernize UI
-- Update add event functionality
-- Introduce Polygons
-- Dynamically update date from API
-- add second API like Weather Data
-- Filtering of genre, venue etc.
-
