@@ -1,4 +1,5 @@
-# Advanced Web Mapping Labs - Solutions
+
+# Advanced Web Mapping CA1
 
 This repository contains a web mapping application for my Advanced Web Mapping module at TU Dublin
 
@@ -36,6 +37,12 @@ Spatial model that represents an event with geolocatin and metadata like venue, 
 | start_date | DateTimeField | Event start date and time |
 | url | URLField | Official event URL |
 | location | PointField | Geographic coordinates (longitude, latitude) |
+
+
+
+# Architecture Diagram
+<img width="1868" height="959" alt="image" src="https://github.com/user-attachments/assets/6d783989-3961-45de-8e9f-c3144842bbea" />
+
 
 # 🔧 Setup
 
@@ -84,9 +91,29 @@ Then you can run:
 
 You can now access the app from [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
+Main Page:
+<img width="2870" height="1468" alt="image" src="https://github.com/user-attachments/assets/3f74fd8a-774f-49b0-92b6-73577ce39d49" />
+
+Radius and Proximity Search Page:
+URL = [http://127.0.0.1:8000/search/map](http://127.0.0.1:8000/search/map)
+<img width="2875" height="1493" alt="image" src="https://github.com/user-attachments/assets/3772a9a6-377e-464c-a021-ad8762d98f1c" />
+
+
 # 🌐 API Endpoints
 ## Events API
 
     GET /api/events/ - List all events
     GET /api/geojson/ - Events GeoJson
+
+
+# Possible extensions
+
+### Some extensions I will make to this app in the future:
+- Fully Dockerize all aspects of the project (Django, Postgis, Nginx, Pgadmin)
+- Update/modernize UI
+- Update add event functionality
+- Introduce Polygons
+- Dynamically update date from API
+- add second API like Weather Data
+- Filtering of genre, venue etc.
 
