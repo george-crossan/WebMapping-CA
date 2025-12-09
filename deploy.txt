@@ -1,0 +1,61 @@
+az account list -o table
+
+az group create --name webmappinglab7-rg --location westeurope
+
+az acr create --resource-group webmappinglab7-rg --name webmappingregistry --sku Basic --location westeurope (didn't work)
+
+az provider register --namespace Microsoft.ContainerRegistry
+az provider show --namespace Microsoft.ContainerRegistry -o table (check if it says registered)
+
+az acr create --resource-group webmappinglab7-rg --name webmappingregistry --sku Basic --location westeurope
+
+az postgres flexible-server create --resource-group webmappinglab7-rg --name webmappinglab7-postgres --location northeurope --admin-user webmapping --admin-password Abc12345! --tier Burstable --sku-name standard_b1ms --storage-size 32 --public-access 0.0.0.0
+
+az postgres flexible-server db create --resource-group webmappinglab7-rg --server-name webmappinglab7-postgres --database-name lab7-db
+
+Connection is 
+Host: webmappinglab7-postgres.postgres.database.azure.com
+Database: lab7-db
+User: webmapping
+Password: Abc12345!
+Port: 5432
+
+
+az acr login --name webmappingregistry
+
+docker build -f docker/django/Dockerfile -t webmappingregistry.azurecr.io/webmapping-django:latest .
+
+docker push webmappingregistry.azurecr.io/webmapping-django:latest
+
+docker build -f docker/nginx/Dockerfile -t webmappingregistry.azurecr.io/webmapping-nginx:latest docker/nginx
+
+docker push webmappingregistry.azurecr.io/webmapping-nginx:latest
+
+make azure-deployment.json
+
+enable firewall access:
+az postgres flexible-server firewall-rule create --name webmappinglab7-postgres --resource-group webmappinglab7-rg --rule-name allow-all --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255 
+
+deploy:
+az container create --resource-group webmappinglab7-rg --file docker/azure/azure-deployment.json 
+
+
+to find the url:
+az container show --resource-group webmappinglab7-rg --name webmapping-lab7 --query ipAddress.fqdn -o tsv
+
+
+if you make a mistake in a container:
+(example for nginx)
+to test:
+docker run --rm -it webmappingregistry.azurecr.io/webmapping-nginx:latest nginx -t
+docker run --rm -it webmappingregistry.azurecr.io/webmapping-nginx:latest cat /etc/nginx/conf.d/nginx.conf
+
+
+docker build -f docker/nginx/Dockerfile -t webmappingregistry.azurecr.io/webmapping-nginx:latest docker/nginx
+
+docker push webmappingregistry.azurecr.io/webmapping-nginx:latest
+
+az container delete -g webmapping-rg -n webmapping-lab7 --yes
+az container create -g webmapping-rg --file azure-container-group.json
+
+
