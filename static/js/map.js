@@ -6,13 +6,23 @@ let allEventsData = [];
 // Initialize map when page loads
 document.addEventListener('DOMContentLoaded', function () {
     initializeMap();
-    loadEventsData();
+    loadEventsForDate(new Date().toISOString().split('T')[0]); // Load today's events on initial load
     setupEventListeners();
+
+    if (document.getElementById("proximity-enabled")) {
+        console.log("ProximitySearch ENABLED for this map");
+        window.proximitySearch = new ProximitySearch(window.map);
+    } else {
+        console.log("ProximitySearch DISABLED on this page");
+    }
 });
 
 function initializeMap() {
     // Initialize the map - Center on Ireland as default
     map = L.map('map').setView([54.5, 15.2], 4); // Changed to Ireland center
+    
+    // Make map globally accessible
+    window.map = map;
 
     // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -22,6 +32,7 @@ function initializeMap() {
 
     // Add the markers layer group to map
     eventMarkers.addTo(map);
+
 
     // Add map click event for adding new events
     map.on('click', function (e) {
@@ -40,8 +51,6 @@ function loadEventsData() {
     // Try the geojson endpoint first
     fetch('api/geojson/')
         .then(response => {
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
             }
@@ -93,6 +102,57 @@ function loadEventsData() {
         });
 }
 
+function loadEventsForDate(dateStr) {
+    console.log(`Loading events for date: ${dateStr}`);
+    showLoading(true);
+
+    fetch(`/api/events/day/${dateStr}/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to load events for selected date");
+            }
+            console.log('Date-specific API response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            let events = [];
+
+            if (Array.isArray(data)) {
+                // API returned a raw array
+                events = data;
+            } else if (data.events && Array.isArray(data.events)) {
+                // API returned { events: [...] }
+                events = data.events;
+            } else if (data._embedded && Array.isArray(data._embedded.events)) {
+                // Ticketmaster-style structure
+                events = data._embedded.events;
+}
+
+            // Convert them to GeoJSON the same way your map script expects
+            const geojsonFeatures = events.map(ev => ({
+                type: "Feature",
+                geometry: {
+                    type: "Point",
+                    coordinates: [parseFloat(ev.longitude), parseFloat(ev.latitude)]
+                },
+                properties: ev
+            }));
+
+            allEventsData = geojsonFeatures;
+
+            displayEventsOnMap(allEventsData);
+            updateEventsCount(allEventsData.length);
+        })
+        .catch(err => {
+            console.error(err);
+            showAlert("Error loading events for that date.", "danger");
+        })
+        .finally(() => {
+            showLoading(false);
+        });
+}
+
+
 function loadEventsDataFromRegularAPI() {
     console.log('Trying regular API endpoint...');
     return fetch('/api/events/')
@@ -107,10 +167,7 @@ function loadEventsDataFromRegularAPI() {
             console.log('Regular API response:', data);
             let eventsArray;
             // Handle different response formats
-            if (data && data.results && Array.isArray(data.results)) {
-                // Paginated response
-                eventsArray = data.results;
-            } else if (Array.isArray(data)) {
+            if (Array.isArray(data)) {
                 // Direct array response
                 eventsArray = data;
             } else {
@@ -348,6 +405,10 @@ function setupEventListeners() {
     const closeInfoBtn = document.getElementById('close-info');
     const addEventBtn = document.getElementById('add-event-btn');
     const saveEventBtn = document.getElementById('save-event');
+    const dateFilterInput = document.getElementById('date-filter');
+    const cityFilter = document.getElementById('city-filter');
+    const venueFilter = document.getElementById('venue-filter');
+
     if (searchBtn) {
         searchBtn.addEventListener('click', performSearch);
     }
@@ -390,7 +451,62 @@ function setupEventListeners() {
     if (saveEventBtn) {
         saveEventBtn.addEventListener('click', saveNewEvent);
     }
+    if (dateFilterInput) {
+        dateFilterInput.addEventListener('change', function () {
+            console.log('Date filter changed');
+            const selectedDate = dateFilterInput.value;
+            if (selectedDate) {
+                loadEventsForDate(selectedDate);
+            } else {
+                displayEventsOnMap(allEventsData);
+                updateEventsCount(allEventsData.length);
+            }
+        });
+    }
+    if (cityFilter) {
+        cityFilter.addEventListener('change', function () {
+            applyFilters();
+        });
+    }
+    if (venueFilter) {
+        venueFilter.addEventListener('change', function () {
+            applyFilters();
+        });
+    }
 }
+
+function applyFilters() {
+    const dateVal = document.getElementById('date-filter')?.value || '';
+    const cityVal = document.getElementById('city-filter')?.value || '';
+    const venueVal = document.getElementById('venue-filter')?.value || '';
+
+    let filtered = [...allEventsData];
+
+    // Filter by date
+    if (dateVal) {
+        filtered = filtered.filter(ev =>
+            ev.start_date && ev.start_date.startsWith(dateVal)
+        );
+    }
+
+    // Filter by city
+    if (cityVal) {
+        filtered = filtered.filter(ev =>
+            ev.city && ev.city.toLowerCase() === cityVal.toLowerCase()
+        );
+    }
+
+    // Filter by venue
+    if (venueVal) {
+        filtered = filtered.filter(ev =>
+            ev.venue && ev.venue.toLowerCase().includes(venueVal.toLowerCase())
+        );
+    }
+    
+    displayEventsOnMap(filtered);
+    updateEventsCount(filtered.length);
+}
+
 
 function saveNewEvent() {
     const nameInput = document.getElementById('event-name');
@@ -515,6 +631,9 @@ function copyCoordinates(lat, lng) {
         } catch (err) {
             showAlert('Failed to copy coordinates to clipboard.', 'warning');
         }
+
+
+
         document.body.removeChild(textArea);
     }
 }
@@ -795,14 +914,3 @@ class ProximitySearch {
         }
     }
 }
-
-
-// Initialize proximity search when map loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Wait for your existing map to be initialized
-    setTimeout(() => {
-        if (window.map) {
-            window.proximitySearch = new ProximitySearch(window.map);
-        }
-    }, 1000);
-});

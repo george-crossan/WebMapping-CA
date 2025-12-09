@@ -18,14 +18,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'events:map' %}">🌍 What's on Ireland</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'events:map_search_view' %}" id="add-city-btn">Spatial Search</a>
-            </div>
-        </div>
-    </nav>
+    {% include 'navbar.html' %}
 
     <main>
         {% block content %}{% endblock %}

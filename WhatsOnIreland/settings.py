@@ -18,9 +18,9 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # GDAL and PROJ libraries for GeoDjango
-GDAL_LIBRARY_PATH = r'C:\Users\georg\AppData\Local\Programs\OSGeo4W\bin\gdal311.dll'
-GEOS_LIBRARY_PATH = r'C:\Users\georg\AppData\Local\Programs\OSGeo4W\bin\geos_c.dll'
-PROJ_LIBRARY_PATH = r'C:\Users\georg\AppData\Local\Programs\OSGeo4W\bin\proj_9.dll'
+GDAL_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgdal.so.36"
+GEOS_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libgeos_c.so.1"
+PROJ_LIBRARY_PATH = "/usr/lib/x86_64-linux-gnu/libproj.so"
 
 load_dotenv()
 
@@ -28,6 +28,7 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 TICKETMASTER_API_KEY = os.getenv('TICKETMASTER_API_KEY')
+OPENWEATHER_API_KEY = os.getenv('OPENWEATHER_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -56,6 +57,7 @@ INSTALLED_APPS = [
 
     # Local apps
     'events',
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -94,10 +96,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'CA_db',
-        'USER': 'CA_user',
-        'PASSWORD': 'CA123',
-        'HOST': 'localhost',
-        'PORT': '5434',
+        'USER': 'postgres',
+        'PASSWORD': 'password',
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
 
@@ -136,3 +138,8 @@ REST_FRAMEWORK = {
 # CORS settings for development
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
+
+# Authentication Configuration
+LOGIN_URL = '/auth/login/'
+LOGIN_REDIRECT_URL = '/events/'
+LOGOUT_REDIRECT_URL = '/events/'

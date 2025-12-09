@@ -1,0 +1,117 @@
+{% extends 'authentication/base.html' %}
+
+{% block title %}Dashboard - Web Mapping Project{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="dashboard-header">
+                    <h2><i class="fas fa-tachometer-alt me-3"></i>Welcome back, {{ user.first_name|default:user.username }}!</h2>
+                    <p class="mb-0">Access your mapping tools and manage city data</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <h5 class="card-title">Interactive Maps</h5>
+                    <p class="card-text">Explore our advanced mapping interface with polygon drawing and spatial analysis tools.</p>
+                    <a href="map/" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt me-2"></i>Open Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-city"></i>
+                    </div>
+                    <h5 class="card-title">City Data</h5>
+                    <p class="card-text">Search, view, and edit city information with our comprehensive city database.</p>
+                    <a href="/events/" class="btn btn-primary">
+                        <i class="fas fa-database me-2"></i>Manage Cities
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card feature-card">
+                <div class="card-body text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5 class="card-title">Analytics</h5>
+                    <p class="card-text">View detailed analytics and insights about your mapping data and usage patterns.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-info-circle me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-sign-in-alt text-success"></i>
+                        </div>
+                        <div>
+                            <strong>Logged in successfully</strong>
+                            <br>
+                            <small class="text-muted">Just now</small>
+                        </div>
+                    </div>
+
+                    {% if user.last_login %}
+                    <hr>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-history text-info"></i>
+                        </div>
+                        <div>
+                            <strong>Previous login</strong>
+                            <br>
+                            <small class="text-muted">{{ user.last_login|date:"F d, Y g:i A" }}</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-user me-2"></i>Account</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                    <p class="mb-0"><strong>Member since:</strong> {{ user.date_joined|date:"M Y" }}</p>
+                    <hr>
+                    <div class="d-grid">
+                        <a href="{% url 'authentication:profile' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-cog me-2"></i>Manage Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

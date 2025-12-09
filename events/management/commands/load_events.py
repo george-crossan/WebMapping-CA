@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
         created_count = 0
         updated_count = 0
-
+        
         for event_data in events:
             
             # Venue name is found in '_embedded': {'venues': [{'name':<venue name>}]}

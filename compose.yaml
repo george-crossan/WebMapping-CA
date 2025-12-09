@@ -1,0 +1,42 @@
+services:
+  db:
+    image: postgis/postgis
+    container_name: CA-postgis
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=CA_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5434:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: CA-pgadmin
+    restart: unless-stopped
+    ports:
+      - 8888:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+
+  django:
+    depends_on:
+      - db
+    build: .
+    container_name: CA-django
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
+  pgadmindata:

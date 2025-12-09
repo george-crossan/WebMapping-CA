@@ -12,23 +12,54 @@
                 <div class="card-body py-2">
                     <div class="row align-items-center">
                         <div class="col-md-6">
+                            <div class="col-md-3">
+                            </div>
                             <div class="input-group">
                                 <input type="text" id="event-search" class="form-control"
                                        placeholder="Search events or cities...">
-                                <button class="btn btn-outline-secondary" type="button" id="search-btn">
+                                <button class="btn btn-outline-primary" type="button" id="search-btn">
                                     🔍 Search
                                 </button>
-                                <button class="btn btn-outline-danger" type="button" id="clear-search">
+                                <button class="btn btn-outline-secondary" type="button" id="clear-search">
                                     Clear
                                 </button>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex gap-2">
-                                <span class="badge bg-info" id="event-count">0 events loaded</span>
-                                <button class="btn btn-sm btn-success" id="refresh-map">Refresh Map</button>
+                                <span class="badge bg-primary" id="event-count">0 events loaded</span>
+                                <button class="btn btn-sm btn-primary" id="refresh-map">Refresh Map</button>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="input-group mt-2">
+                                <span class="input-group-text">Date</span>
+                                <input type="date" id="date-filter" class="form-control">
+                            </div>
+                        </div>  
+                        <div class="col-md-3">
+                            <div class="input-group mt-2">
+                                <span class="input-group-text">City</span>
+                                <select id="city-filter" class="form-select">
+                                    <option value="">All Cities</option>
+                                    <option value="Dublin">Dublin</option>
+                                    <option value="Cork">Cork</option>
+                                    <option value="Limerick">Limerick</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group mt-2">
+                                <span class="input-group-text">Venue</span>
+                                <select id="venue-filter" class="form-select">
+                                    <option value="">All Venues</option>
+                                    <option value="3arena">3arena</option>
+                                    <option value="board gais">board gais</option>
+                                    <option value="3olympia">3olympia</option>
+                                </select>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
